@@ -1,0 +1,1259 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dana Infak Kematian Warga RT.010</title>
+
+<!-- Ikon -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<!-- Export Excel -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<!-- Export PDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+
+<style>
+/* ============ RESET & VARIABEL ============ */
+:root{
+  --hijau:#2e7d32;
+  --hijau-tua:#1b5e20;
+  --hijau-muda:#66bb6a;
+  --hijau-pucat:#e8f5e9;
+  --putih:#ffffff;
+  --abu:#f4f6f5;
+  --abu-tua:#6b7280;
+  --merah:#e53935;
+  --merah-pucat:#ffebee;
+  --kuning:#f9a825;
+  --radius:12px;
+  --shadow:0 2px 10px rgba(0,0,0,.07);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  font-family:'Segoe UI',Roboto,Arial,sans-serif;
+  background:var(--abu);
+  color:#222;
+  min-height:100vh;
+}
+::-webkit-scrollbar{height:8px;width:8px;}
+::-webkit-scrollbar-thumb{background:#c8d6c9;border-radius:4px;}
+
+/* ============ LOGIN ============ */
+#layarLogin{
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:linear-gradient(135deg,var(--hijau-tua),var(--hijau) 60%,var(--hijau-muda));
+  padding:16px;
+}
+.kartuLogin{
+  background:var(--putih);
+  border-radius:var(--radius);
+  padding:36px 30px;
+  width:100%;
+  max-width:380px;
+  box-shadow:0 10px 40px rgba(0,0,0,.25);
+  text-align:center;
+}
+.kartuLogin .logo{
+  width:64px;height:64px;border-radius:50%;
+  background:var(--hijau-pucat);color:var(--hijau);
+  display:flex;align-items:center;justify-content:center;
+  font-size:28px;margin:0 auto 14px;
+}
+.kartuLogin h1{font-size:19px;color:var(--hijau-tua);margin-bottom:4px;}
+.kartuLogin p.sub{color:var(--abu-tua);font-size:13px;margin-bottom:22px;}
+.grup{text-align:left;margin-bottom:14px;}
+.grup label{display:block;font-size:12.5px;font-weight:600;color:#444;margin-bottom:5px;}
+.grup input,.grup select{
+  width:100%;padding:11px 12px;border:1.5px solid #dfe3e0;border-radius:8px;
+  font-size:14px;outline:none;transition:.15s;background:#fafafa;
+}
+.grup input:focus,.grup select:focus{border-color:var(--hijau);background:#fff;}
+.btn{
+  cursor:pointer;border:none;border-radius:8px;padding:11px 18px;
+  font-size:14px;font-weight:600;display:inline-flex;align-items:center;
+  justify-content:center;gap:8px;transition:.15s;
+}
+.btn-hijau{background:var(--hijau);color:#fff;width:100%;}
+.btn-hijau:hover{background:var(--hijau-tua);}
+.btn-outline{background:#fff;border:1.5px solid var(--hijau);color:var(--hijau);}
+.btn-outline:hover{background:var(--hijau-pucat);}
+.btn-merah{background:var(--merah);color:#fff;}
+.btn-merah:hover{background:#c62828;}
+.btn-abu{background:#eceff1;color:#37474f;}
+.btn-abu:hover{background:#d9dedf;}
+.btn-kecil{padding:6px 10px;font-size:12.5px;}
+.linkPublik{display:block;margin-top:16px;font-size:12.5px;color:var(--hijau);cursor:pointer;text-decoration:underline;}
+
+/* ============ LAYOUT APLIKASI ============ */
+#app{display:none;min-height:100vh;}
+.wrap{display:flex;min-height:100vh;}
+
+.sidebar{
+  width:230px;background:var(--hijau-tua);color:#fff;flex-shrink:0;
+  display:flex;flex-direction:column;position:fixed;top:0;bottom:0;left:0;
+  transition:.25s;z-index:50;
+}
+.sidebar .brand{padding:20px 18px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,.12);}
+.sidebar .brand i{font-size:22px;color:#a5d6a7;}
+.sidebar .brand span{font-size:14.5px;font-weight:700;line-height:1.25;}
+.nav{list-style:none;padding:10px 0;flex:1;overflow-y:auto;}
+.nav li a{
+  display:flex;align-items:center;gap:12px;padding:11px 20px;color:#dcedc8;
+  font-size:13.6px;cursor:pointer;border-left:3px solid transparent;
+}
+.nav li a i{width:18px;text-align:center;}
+.nav li a:hover{background:rgba(255,255,255,.06);}
+.nav li a.aktif{background:rgba(255,255,255,.12);border-left-color:#a5d6a7;color:#fff;font-weight:600;}
+.sidebar .footNav{padding:14px 18px;border-top:1px solid rgba(255,255,255,.12);font-size:12px;color:#c8e6c9;}
+
+.konten{margin-left:230px;flex:1;padding:22px 26px 60px;transition:.25s;width:calc(100% - 230px);}
+
+.topbar{
+  display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;gap:10px;flex-wrap:wrap;
+}
+.topbar .judulHalaman{font-size:19px;font-weight:700;color:var(--hijau-tua);}
+.topbar .kananTop{display:flex;align-items:center;gap:12px;}
+.btnHamburger{display:none;background:none;border:none;font-size:20px;color:var(--hijau-tua);cursor:pointer;}
+.userChip{
+  display:flex;align-items:center;gap:8px;background:#fff;border-radius:20px;padding:6px 14px 6px 6px;box-shadow:var(--shadow);font-size:13px;
+}
+.userChip .bulat{width:28px;height:28px;border-radius:50%;background:var(--hijau);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;}
+
+/* ============ KARTU DASHBOARD ============ */
+.gridKartu{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:18px;margin-bottom:26px;}
+.kartuStat{
+  --warna:#2e7d32;
+  background:#fff;border-radius:14px;padding:20px 22px;box-shadow:0 2px 10px rgba(0,0,0,.06);
+  display:flex;align-items:center;gap:16px;border-top:4px solid var(--warna);
+  position:relative;overflow:hidden;transition:.2s;
+}
+.kartuStat:hover{transform:translateY(-3px);box-shadow:0 10px 26px rgba(0,0,0,.1);}
+.kartuStat::after{
+  content:'';position:absolute;right:-26px;top:-26px;width:90px;height:90px;border-radius:50%;
+  background:var(--warna);opacity:.07;
+}
+.kartuStat .ikon{
+  width:50px;height:50px;border-radius:12px;background:var(--warna);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;
+  box-shadow:0 4px 10px color-mix(in srgb, var(--warna) 45%, transparent);
+}
+.kartuStat .label{font-size:11.5px;color:var(--abu-tua);font-weight:700;text-transform:uppercase;letter-spacing:.4px;}
+.kartuStat .nilai{font-size:19px;font-weight:800;color:#1a1a1a;margin-top:4px;}
+
+/* ============ PANEL / KARTU KONTEN ============ */
+.panel{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:20px;margin-bottom:20px;}
+.panel h2{font-size:15.5px;color:var(--hijau-tua);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.barisAlat{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:16px;justify-content:space-between;}
+.barisAlat .kiri,.barisAlat .kanan{display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
+.inputCari{position:relative;}
+.inputCari i{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:#9aa;font-size:13px;}
+.inputCari input{padding:9px 12px 9px 32px;border:1.5px solid #e2e6e3;border-radius:8px;font-size:13px;min-width:200px;}
+select.filter,input.filter{padding:9px 12px;border:1.5px solid #e2e6e3;border-radius:8px;font-size:13px;}
+
+/* ============ TABEL ============ */
+.tabelWrap{overflow-x:auto;border-radius:10px;border:1px solid #edf0ee;}
+.tabelWrap.tabelScroll{max-height:62vh;overflow-y:auto;}
+table{width:100%;border-collapse:collapse;font-size:13px;min-width:600px;}
+thead th{
+  background:var(--hijau-pucat);color:var(--hijau-tua);text-align:left;padding:10px 12px;
+  font-weight:700;white-space:nowrap;position:sticky;top:0;z-index:2;
+}
+tbody td{padding:9px 12px;border-bottom:1px solid #f0f2f0;white-space:nowrap;}
+tbody tr:hover{background:#fafcfa;}
+.badge{padding:4px 10px;border-radius:20px;font-size:11.5px;font-weight:700;display:inline-block;}
+.badge-hijau{background:#e6f4ea;color:#1b7e34;}
+.badge-merah{background:var(--merah-pucat);color:#c62828;}
+.badge-abu{background:#eceff1;color:#607d8b;}
+.selLunas{background:#e6f4ea !important;}
+.selBelum{background:var(--merah-pucat) !important;}
+.aksiSel{display:flex;gap:6px;}
+.aksiSel button{border:none;background:none;cursor:pointer;font-size:14px;color:#607d8b;padding:4px 6px;border-radius:6px;}
+.aksiSel button:hover{background:#eef1ef;}
+.aksiSel .edit:hover{color:var(--hijau);}
+.aksiSel .hapus:hover{color:var(--merah);}
+.kosong{text-align:center;padding:30px;color:#9aa;font-size:13px;}
+
+/* ============ MODAL ============ */
+.overlay{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;
+  align-items:center;justify-content:center;padding:16px;
+}
+.overlay.tampil{display:flex;}
+.modal{
+  background:#fff;border-radius:var(--radius);width:100%;max-width:460px;
+  max-height:88vh;overflow-y:auto;box-shadow:0 20px 50px rgba(0,0,0,.3);
+}
+.modal .headModal{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid #eee;}
+.modal .headModal h3{font-size:15.5px;color:var(--hijau-tua);}
+.modal .headModal .tutup{cursor:pointer;color:#999;font-size:18px;background:none;border:none;}
+.modal .bodyModal{padding:18px 20px;}
+.modal .footModal{padding:14px 20px;border-top:1px solid #eee;display:flex;justify-content:flex-end;gap:10px;}
+.gridForm{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.gridForm .full{grid-column:1/-1;}
+
+/* ============ LOADING & NOTIFIKASI ============ */
+#overlayLoading{
+  display:none;position:fixed;inset:0;background:rgba(255,255,255,.75);z-index:999;
+  align-items:center;justify-content:center;flex-direction:column;gap:12px;
+}
+#overlayLoading.tampil{display:flex;}
+.spinner{width:42px;height:42px;border:4px solid #d9e8da;border-top-color:var(--hijau);border-radius:50%;animation:putar 0.8s linear infinite;}
+@keyframes putar{to{transform:rotate(360deg);}}
+#kotakToast{position:fixed;top:18px;right:18px;z-index:1000;display:flex;flex-direction:column;gap:10px;}
+.toast{
+  min-width:250px;max-width:320px;background:#fff;border-radius:10px;box-shadow:0 8px 26px rgba(0,0,0,.18);
+  padding:13px 16px;display:flex;align-items:flex-start;gap:10px;border-left:4px solid var(--hijau);
+  animation:masuk .25s ease;font-size:13px;
+}
+.toast.gagal{border-left-color:var(--merah);}
+@keyframes masuk{from{opacity:0;transform:translateX(30px);}to{opacity:1;transform:translateX(0);}}
+
+/* ============ LAPORAN CETAK ============ */
+.pilihLaporan{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;}
+.kartuLaporan{
+  border:1.5px solid #e7ebe8;border-radius:10px;padding:16px;cursor:pointer;transition:.15s;text-align:center;
+}
+.kartuLaporan:hover{border-color:var(--hijau);background:var(--hijau-pucat);}
+.kartuLaporan i{font-size:24px;color:var(--hijau);margin-bottom:8px;}
+.kartuLaporan div{font-size:13px;font-weight:600;color:#333;}
+
+/* ============ MODE WARGA (HANYA LIHAT) ============ */
+.mode-warga .hanyaAdmin{display:none !important;}
+.pitaWarga{
+  display:none;background:linear-gradient(90deg,#1b5e20,#2e7d32);color:#fff;text-align:center;
+  font-size:12.5px;font-weight:600;padding:8px 14px;letter-spacing:.2px;
+}
+.mode-warga .pitaWarga{display:block;}
+
+.tabelInputBulan td input{width:80px;padding:6px 7px;border:1px solid #dde;border-radius:6px;font-size:12.5px;}
+
+@media(max-width:900px){
+  .sidebar{transform:translateX(-100%);}
+  .sidebar.tampil{transform:translateX(0);}
+  .konten{margin-left:0;width:100%;}
+  .btnHamburger{display:block;}
+  .gridForm{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- ==================== KONFIGURASI API ==================== -->
+<script>
+  // GANTI dengan URL Web App hasil deploy Google Apps Script Anda (harus diakhiri /exec)
+  const API_URL = "https://script.google.com/macros/s/AKfycbxwPmc1ES2E7adCORwj_RKrhiqpqx6XXYUl_7XRx1KgAb8S-B0uGsV39Dn1eh8SSD3S4g/exec";
+</script>
+
+<!-- ==================== LOADING & TOAST ==================== -->
+<div id="overlayLoading"><div class="spinner"></div><div style="font-size:13px;color:#555;">Memproses...</div></div>
+<div id="kotakToast"></div>
+
+<!-- ==================== LAYAR LOGIN ==================== -->
+<div id="layarLogin">
+  <div class="kartuLogin">
+    <div class="logo"><i class="fa-solid fa-hand-holding-heart"></i></div>
+    <h1>Dana Infak Kematian</h1>
+    <p class="sub">Warga RT.010 RW.04</p>
+    <form id="formLogin">
+      <div class="grup">
+        <label>Username</label>
+        <input type="text" id="loginUsername" placeholder="Masukkan username" required autocomplete="username">
+      </div>
+      <div class="grup">
+        <label>Password</label>
+        <input type="password" id="loginPassword" placeholder="Masukkan password" required autocomplete="current-password">
+      </div>
+      <button type="submit" class="btn btn-hijau"><i class="fa-solid fa-right-to-bracket"></i> Masuk</button>
+    </form>
+    <span class="linkPublik" onclick="bukaPublik()">Warga? Lihat total infak tanpa login</span>
+  </div>
+</div>
+
+<!-- ==================== APLIKASI UTAMA ==================== -->
+<div id="app">
+<div class="wrap">
+  <!-- SIDEBAR -->
+  <div class="sidebar" id="sidebar">
+    <div class="brand"><i class="fa-solid fa-hand-holding-heart"></i><span>Dana Infak<br>Kematian Warga RT.010 RW.04</span></div>
+    <ul class="nav" id="navMenu">
+      <li><a data-target="halDashboard" class="aktif" onclick="pindahHalaman('halDashboard',this)"><i class="fa-solid fa-gauge-high"></i> Dashboard</a></li>
+      <li><a data-target="halAnggota" onclick="pindahHalaman('halAnggota',this)"><i class="fa-solid fa-users"></i> Data Anggota</a></li>
+      <li><a data-target="halInfak" onclick="pindahHalaman('halInfak',this)"><i class="fa-solid fa-hand-holding-dollar"></i> Infak</a></li>
+      <li class="hanyaAdmin"><a data-target="halKas" onclick="pindahHalaman('halKas',this)"><i class="fa-solid fa-money-bill-transfer"></i> Pengeluaran</a></li>
+      <li><a data-target="halLaporan" onclick="pindahHalaman('halLaporan',this)"><i class="fa-solid fa-file-lines"></i> Laporan</a></li>
+      <li class="hanyaAdmin" id="menuPengaturan"><a data-target="halPengaturan" onclick="pindahHalaman('halPengaturan',this)"><i class="fa-solid fa-gear"></i> Pengaturan</a></li>
+    </ul>
+    <div class="footNav">© <span id="tahunFooter"></span> Kas RT</div>
+  </div>
+
+  <!-- KONTEN -->
+  <div class="konten">
+    <div class="pitaWarga"><i class="fa-solid fa-eye"></i> Mode Warga — Anda hanya dapat melihat data, tidak dapat menambah, mengubah, atau menghapus.</div>
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <button class="btnHamburger" onclick="document.getElementById('sidebar').classList.toggle('tampil')"><i class="fa-solid fa-bars"></i></button>
+        <div class="judulHalaman" id="judulHalaman">Dashboard</div>
+      </div>
+      <div class="kananTop">
+        <div class="userChip">
+          <div class="bulat" id="inisialUser">A</div>
+          <span id="namaUserAktif">Admin</span>
+        </div>
+        <button class="btn btn-abu btn-kecil" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> <span id="labelKeluar">Keluar</span></button>
+      </div>
+    </div>
+
+    <!-- ===== DASHBOARD ===== -->
+    <div id="halDashboard" class="halaman">
+      <div class="gridKartu" id="gridDashboard"></div>
+      <div class="panel">
+        <h2><i class="fa-solid fa-circle-info"></i> Ringkasan</h2>
+        <p style="font-size:13px;color:#555;line-height:1.7;">
+          Selamat datang di sistem pengelolaan Dana infak kematian warga RT.010 RW.04
+          Gunakan menu di sebelah kiri untuk mengelola data anggota, mencatat pembayaran bulanan,
+          mencatat pengeluaran, hingga mencetak laporan resmi.
+        </p>
+      </div>
+    </div>
+
+    <!-- ===== ANGGOTA ===== -->
+    <div id="halAnggota" class="halaman" style="display:none;">
+      <div class="panel">
+        <div class="barisAlat">
+          <div class="kiri">
+            <div class="inputCari"><i class="fa-solid fa-magnifying-glass"></i><input type="text" id="cariAnggota" placeholder="Cari nama..." oninput="renderAnggota()"></div>
+          </div>
+          <div class="kanan">
+            <button class="btn btn-outline btn-kecil" onclick="cetakTabel('tabelAnggota','Data Anggota')"><i class="fa-solid fa-print"></i> Cetak</button>
+            <button class="btn btn-outline btn-kecil" onclick="exportPDF('tabelAnggota','Data Anggota')"><i class="fa-solid fa-file-pdf"></i> PDF</button>
+            <button class="btn btn-outline btn-kecil" onclick="exportExcel('tabelAnggota','Data_Anggota','Data Anggota')"><i class="fa-solid fa-file-excel"></i> Excel</button>
+            <button class="btn btn-hijau btn-kecil hanyaAdmin" onclick="bukaModalAnggota()"><i class="fa-solid fa-plus"></i> Tambah</button>
+          </div>
+        </div>
+        <div class="tabelWrap tabelScroll">
+          <table id="tabelAnggota">
+            <thead><tr><th>No.</th><th>Nama Warga</th><th>Tgl Bergabung</th><th>Status</th><th class="hanyaAdmin">Aksi</th></tr></thead>
+            <tbody id="tbodyAnggota"><tr><td colspan="5" class="kosong">Memuat data...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== INFAK ===== -->
+    <div id="halInfak" class="halaman" style="display:none;">
+      <div class="panel">
+        <div class="barisAlat">
+          <div class="kiri">
+            <select class="filter" id="infakTahun" onchange="renderIuran('infak')"></select>
+            <div class="inputCari"><i class="fa-solid fa-magnifying-glass"></i><input type="text" id="cariInfak" placeholder="Cari nama..." oninput="renderIuran('infak')"></div>
+          </div>
+          <div class="kanan">
+            <button class="btn btn-outline btn-kecil" onclick="cetakTabel('tabelInfak','Rekap Infak')"><i class="fa-solid fa-print"></i> Cetak</button>
+            <button class="btn btn-outline btn-kecil" onclick="exportPDF('tabelInfak','Rekap Infak')"><i class="fa-solid fa-file-pdf"></i> PDF</button>
+            <button class="btn btn-outline btn-kecil" onclick="exportExcel('tabelInfak','Rekap_Infak','Rekap Infak')"><i class="fa-solid fa-file-excel"></i> Excel</button>
+          </div>
+        </div>
+        <div class="tabelWrap tabelScroll">
+          <table id="tabelInfak">
+            <thead><tr id="theadInfak"></tr></thead>
+            <tbody id="tbodyInfak"><tr><td colspan="16" class="kosong">Memuat data...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== PENGELUARAN ===== -->
+    <div id="halKas" class="halaman" style="display:none;">
+      <div class="panel">
+        <div class="barisAlat">
+          <div class="kiri">
+            <div class="inputCari"><i class="fa-solid fa-magnifying-glass"></i><input type="text" id="cariKas" placeholder="Cari uraian..." oninput="renderKas()"></div>
+          </div>
+          <div class="kanan">
+            <button class="btn btn-outline btn-kecil" onclick="cetakTabel('tabelKas','Data Pengeluaran')"><i class="fa-solid fa-print"></i> Cetak</button>
+            <button class="btn btn-outline btn-kecil" onclick="exportPDF('tabelKas','Data Pengeluaran')"><i class="fa-solid fa-file-pdf"></i> PDF</button>
+            <button class="btn btn-outline btn-kecil" onclick="exportExcel('tabelKas','Data_Pengeluaran','Data Pengeluaran')"><i class="fa-solid fa-file-excel"></i> Excel</button>
+            <button class="btn btn-hijau btn-kecil" onclick="bukaModalKas()"><i class="fa-solid fa-plus"></i> Tambah Pengeluaran</button>
+          </div>
+        </div>
+        <div class="tabelWrap">
+          <table id="tabelKas">
+            <thead><tr><th>Tanggal</th><th>Uraian</th><th>Nominal</th><th>Total s.d. Saat Ini</th><th>Aksi</th></tr></thead>
+            <tbody id="tbodyKas"><tr><td colspan="5" class="kosong">Memuat data...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== LAPORAN ===== -->
+    <div id="halLaporan" class="halaman" style="display:none;">
+      <div class="panel">
+        <h2><i class="fa-solid fa-file-lines"></i> Pilih Jenis Laporan</h2>
+        <div class="pilihLaporan">
+          <div class="kartuLaporan" onclick="tampilkanLaporanInfakBulanan()"><i class="fa-solid fa-calendar-days"></i><div>Laporan Infak Bulanan</div></div>
+          <div class="kartuLaporan" onclick="tampilkanLaporanInfakTahunan()"><i class="fa-solid fa-calendar"></i><div>Laporan Infak Tahunan</div></div>
+          <div class="kartuLaporan" onclick="pindahHalaman('halInfak',null)"><i class="fa-solid fa-hand-holding-dollar"></i><div>Rekap Infak</div></div>
+          <div class="kartuLaporan hanyaAdmin" onclick="tampilkanLaporanPengeluaranBulanan()"><i class="fa-solid fa-money-bill-trend-up"></i><div>Laporan Pengeluaran Bulanan</div></div>
+          <div class="kartuLaporan hanyaAdmin" onclick="tampilkanLaporanPengeluaranTahunan()"><i class="fa-solid fa-money-bill-wave"></i><div>Laporan Pengeluaran Tahunan</div></div>
+        </div>
+      </div>
+      <div class="panel" id="panelLaporanHasil" style="display:none;">
+        <div class="barisAlat">
+          <h2 id="judulLaporanHasil" style="margin:0;"></h2>
+          <div class="kanan">
+            <button class="btn btn-outline btn-kecil" onclick="cetakTabel('tabelLaporanHasil', document.getElementById('judulLaporanHasil').textContent)"><i class="fa-solid fa-print"></i> Cetak</button>
+            <button class="btn btn-outline btn-kecil" onclick="exportPDF('tabelLaporanHasil', document.getElementById('judulLaporanHasil').textContent)"><i class="fa-solid fa-file-pdf"></i> PDF</button>
+            <button class="btn btn-outline btn-kecil" onclick="exportExcel('tabelLaporanHasil','Laporan', document.getElementById('judulLaporanHasil').textContent)"><i class="fa-solid fa-file-excel"></i> Excel</button>
+          </div>
+        </div>
+        <div class="tabelWrap"><table id="tabelLaporanHasil"><thead><tr id="theadLaporanHasil"></tr></thead><tbody id="tbodyLaporanHasil"></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- ===== PENGATURAN ===== -->
+    <div id="halPengaturan" class="halaman" style="display:none;">
+      <div class="panel">
+        <h2><i class="fa-solid fa-sliders"></i> Pengaturan Umum</h2>
+        <form id="formPengaturan" class="gridForm">
+          <div class="grup"><label>Nama RT</label><input type="text" id="setNamaRT"></div>
+          <div class="grup"><label>Iuran Infak Wajib / bulan (Rp)</label><input type="number" id="setInfWajib"></div>
+          <div class="full"><button type="submit" class="btn btn-hijau btn-kecil"><i class="fa-solid fa-floppy-disk"></i> Simpan Pengaturan</button></div>
+        </form>
+      </div>
+      <div class="panel">
+        <h2><i class="fa-solid fa-key"></i> Ganti Password Saya</h2>
+        <form id="formGantiPassword" class="gridForm">
+          <div class="grup"><label>Password Lama</label><input type="password" id="pwLama" required></div>
+          <div class="grup"><label>Password Baru</label><input type="password" id="pwBaru" required></div>
+          <div class="full"><button type="submit" class="btn btn-hijau btn-kecil"><i class="fa-solid fa-floppy-disk"></i> Ganti Password</button></div>
+        </form>
+      </div>
+      <div class="panel">
+        <div class="barisAlat">
+          <h2 style="margin:0;"><i class="fa-solid fa-users-gear"></i> Manajemen Pengguna</h2>
+          <div class="kanan">
+            <button class="btn btn-hijau btn-kecil" onclick="bukaModalPengguna()"><i class="fa-solid fa-plus"></i> Tambah Pengguna</button>
+          </div>
+        </div>
+        <div class="tabelWrap">
+          <table id="tabelPengguna">
+            <thead><tr><th>Username</th><th>Nama</th><th>Role</th><th>Status</th><th>Aksi</th></tr></thead>
+            <tbody id="tbodyPengguna"><tr><td colspan="5" class="kosong">Memuat data...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</div>
+
+<!-- ==================== MODAL ANGGOTA ==================== -->
+<div class="overlay" id="modalAnggota">
+  <div class="modal">
+    <div class="headModal"><h3 id="judulModalAnggota">Tambah Anggota</h3><button class="tutup" onclick="tutupModal('modalAnggota')">&times;</button></div>
+    <form id="formAnggota">
+      <div class="bodyModal gridForm">
+        <div class="grup full"><label>Nama Warga</label><input type="text" id="fNamaKK" required></div>
+        <div class="grup full"><label>Tanggal Bergabung</label><input type="date" id="fTglGabung" required></div>
+        <div class="grup full"><label>Status</label>
+          <select id="fStatusAnggota"><option value="Aktif">Aktif</option><option value="Tidak Aktif">Tidak Aktif</option></select>
+        </div>
+      </div>
+      <div class="footModal">
+        <button type="button" class="btn btn-abu btn-kecil" onclick="tutupModal('modalAnggota')">Batal</button>
+        <button type="submit" class="btn btn-hijau btn-kecil"><i class="fa-solid fa-floppy-disk"></i> Simpan</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ==================== MODAL INPUT PEMBAYARAN INFAK ==================== -->
+<div class="overlay" id="modalBayar">
+  <div class="modal">
+    <div class="headModal"><h3 id="judulModalBayar">Input Pembayaran</h3><button class="tutup" onclick="tutupModal('modalBayar')">&times;</button></div>
+    <form id="formBayar">
+      <div class="bodyModal">
+        <div class="grup"><label>Nama</label><input type="text" id="bayarNama" disabled></div>
+        <div class="gridForm">
+          <div class="grup"><label>Bulan</label>
+            <select id="bayarBulan"></select>
+          </div>
+          <div class="grup"><label>Tahun</label><input type="number" id="bayarTahun"></div>
+        </div>
+        <div class="grup"><label>Nominal (Rp)</label><input type="number" id="bayarNominal" required></div>
+      </div>
+      <div class="footModal">
+        <button type="button" class="btn btn-abu btn-kecil" onclick="tutupModal('modalBayar')">Batal</button>
+        <button type="submit" class="btn btn-hijau btn-kecil"><i class="fa-solid fa-floppy-disk"></i> Simpan</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ==================== MODAL PENGELUARAN ==================== -->
+<div class="overlay" id="modalKas">
+  <div class="modal">
+    <div class="headModal"><h3>Tambah Pengeluaran</h3><button class="tutup" onclick="tutupModal('modalKas')">&times;</button></div>
+    <form id="formKas">
+      <div class="bodyModal gridForm">
+        <div class="grup full"><label>Tanggal</label><input type="date" id="kTanggal" required></div>
+        <div class="grup full"><label>Uraian</label><input type="text" id="kUraian" required></div>
+        <div class="grup full"><label>Nominal (Rp)</label><input type="number" id="kNominal" required></div>
+      </div>
+      <div class="footModal">
+        <button type="button" class="btn btn-abu btn-kecil" onclick="tutupModal('modalKas')">Batal</button>
+        <button type="submit" class="btn btn-hijau btn-kecil"><i class="fa-solid fa-floppy-disk"></i> Simpan</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ==================== MODAL PENGGUNA ==================== -->
+<div class="overlay" id="modalPengguna">
+  <div class="modal">
+    <div class="headModal"><h3>Tambah Pengguna</h3><button class="tutup" onclick="tutupModal('modalPengguna')">&times;</button></div>
+    <form id="formPengguna">
+      <div class="bodyModal gridForm">
+        <div class="grup full"><label>Username</label><input type="text" id="pUsername" required></div>
+        <div class="grup full"><label>Nama</label><input type="text" id="pNama" required></div>
+        <div class="grup full"><label>Password</label><input type="password" id="pPassword" required></div>
+        <div class="grup full"><label>Role</label>
+          <select id="pRole"><option value="Petugas">Petugas</option><option value="Admin">Admin</option></select>
+        </div>
+      </div>
+      <div class="footModal">
+        <button type="button" class="btn btn-abu btn-kecil" onclick="tutupModal('modalPengguna')">Batal</button>
+        <button type="submit" class="btn btn-hijau btn-kecil"><i class="fa-solid fa-floppy-disk"></i> Simpan</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+/* ==================== STATE GLOBAL ==================== */
+const BULAN = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+let USER = null;
+let DATA = { anggota: [], infak: [], kas: [], pengaturan: [] };
+let editAnggotaMode = false;
+let bayarKonteks = null; // { nomorAnggota, nama }
+
+document.getElementById('tahunFooter').textContent = new Date().getFullYear();
+
+/* ==================== UTIL UMUM ==================== */
+function rupiah(n){
+  n = Number(n)||0;
+  return 'Rp' + n.toLocaleString('id-ID');
+}
+function tampilkanLoading(v){document.getElementById('overlayLoading').classList.toggle('tampil', v);}
+function toast(pesan, sukses=true){
+  const box = document.getElementById('kotakToast');
+  const el = document.createElement('div');
+  el.className = 'toast' + (sukses?'':' gagal');
+  el.innerHTML = `<i class="fa-solid ${sukses?'fa-circle-check':'fa-circle-exclamation'}" style="color:${sukses?'#2e7d32':'#e53935'};margin-top:2px;"></i><div>${pesan}</div>`;
+  box.appendChild(el);
+  setTimeout(()=>{el.remove();}, 3500);
+}
+function tutupModal(id){document.getElementById(id).classList.remove('tampil');}
+function bukaModal(id){document.getElementById(id).classList.add('tampil');}
+
+/* ==================== KOMUNIKASI API ==================== */
+async function apiGet(action, params={}){
+  const qs = new URLSearchParams({action, ...params}).toString();
+  const res = await fetch(`${API_URL}?${qs}`);
+  return res.json();
+}
+async function apiPost(action, payload={}){
+  const res = await fetch(API_URL, {
+    method:'POST',
+    headers:{'Content-Type':'text/plain;charset=utf-8'}, // hindari preflight CORS pada Apps Script
+    body: JSON.stringify({action, ...payload})
+  });
+  return res.json();
+}
+
+/* ==================== LOGIN / LOGOUT ==================== */
+document.getElementById('formLogin').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const username = document.getElementById('loginUsername').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  if(API_URL.includes('PASTE_URL')){
+    toast('API_URL belum diatur. Silakan atur di dalam kode index.html.', false);
+    return;
+  }
+  tampilkanLoading(true);
+  try{
+    const hasil = await apiPost('loginAdmin', {username, password});
+    if(hasil.success){
+      USER = hasil.data;
+      sessionStorage.setItem('userAktif', JSON.stringify(USER));
+      masukAplikasi();
+      toast('Berhasil masuk. Selamat datang, '+USER.nama);
+    }else{
+      toast(hasil.message || 'Login gagal', false);
+    }
+  }catch(err){
+    toast('Gagal terhubung ke server: '+err.message, false);
+  }
+  tampilkanLoading(false);
+});
+
+function masukAplikasi(){
+  MODE_WARGA = false;
+  document.getElementById('layarLogin').style.display='none';
+  document.getElementById('app').classList.remove('mode-warga');
+  document.getElementById('app').style.display='block';
+  document.getElementById('namaUserAktif').textContent = USER.nama;
+  document.getElementById('inisialUser').textContent = (USER.nama||'A').charAt(0).toUpperCase();
+  document.getElementById('labelKeluar').textContent = 'Keluar';
+  aturVisibilitasMenuPengaturan();
+  muatSemuaData();
+}
+function aturVisibilitasMenuPengaturan(){
+  const menuPengaturan = document.getElementById('menuPengaturan');
+  if(!menuPengaturan) return;
+  const bolehLihat = USER && USER.role === 'Admin';
+  menuPengaturan.style.display = bolehLihat ? '' : 'none';
+  // jika petugas sedang berada di halaman Pengaturan saat rolenya tidak diizinkan, alihkan ke Dashboard
+  if(!bolehLihat && document.getElementById('halPengaturan').style.display !== 'none'){
+    pindahHalaman('halDashboard', document.querySelector('[data-target="halDashboard"]'));
+  }
+}
+function logout(){
+  USER = null;
+  MODE_WARGA = false;
+  sessionStorage.removeItem('userAktif');
+  document.getElementById('app').classList.remove('mode-warga');
+  document.getElementById('app').style.display='none';
+  document.getElementById('layarLogin').style.display='flex';
+  document.getElementById('labelKeluar').textContent = 'Keluar';
+}
+
+/* Cek sesi tersimpan */
+(function cekSesi(){
+  const s = sessionStorage.getItem('userAktif');
+  if(s){ USER = JSON.parse(s); }
+})();
+
+/* ==================== MODE WARGA (TANPA LOGIN, HANYA LIHAT) ==================== */
+let MODE_WARGA = false;
+function bukaPublik(){
+  MODE_WARGA = true;
+  USER = { username:'', nama:'Warga', role:'Warga' };
+  document.getElementById('layarLogin').style.display='none';
+  document.getElementById('app').style.display='block';
+  document.getElementById('app').classList.add('mode-warga');
+  document.getElementById('namaUserAktif').textContent = 'Warga (Mode Lihat)';
+  document.getElementById('inisialUser').textContent = 'W';
+  document.getElementById('labelKeluar').textContent = 'Kembali ke Login';
+  aturVisibilitasMenuPengaturan();
+  pindahHalaman('halDashboard', document.querySelector('[data-target="halDashboard"]'));
+  muatSemuaData();
+}
+
+/* ==================== NAVIGASI HALAMAN ==================== */
+const JUDUL = {
+  halDashboard:'Dashboard', halAnggota:'Data Anggota',
+  halInfak:'Infak', halKas:'Pengeluaran', halLaporan:'Laporan', halPengaturan:'Pengaturan'
+};
+function pindahHalaman(id, elLink){
+  document.querySelectorAll('.halaman').forEach(h=>h.style.display='none');
+  document.getElementById(id).style.display='block';
+  document.getElementById('judulHalaman').textContent = JUDUL[id]||'';
+  document.querySelectorAll('.nav li a').forEach(a=>a.classList.remove('aktif'));
+  if(elLink) elLink.classList.add('aktif');
+  else { const a=document.querySelector(`[data-target="${id}"]`); if(a) a.classList.add('aktif'); }
+  document.getElementById('sidebar').classList.remove('tampil');
+}
+
+/* ==================== MUAT SEMUA DATA ==================== */
+async function muatSemuaData(){
+  tampilkanLoading(true);
+  try{
+    const [dash, anggota, inf, kas, peng] = await Promise.all([
+      apiGet('getDashboard'),
+      apiGet('getAnggota'),
+      apiGet('getIuran', {jenis:'infak'}),
+      apiGet('getPengeluaran'),
+      apiGet('getPengaturan')
+    ]);
+    DATA.anggota = anggota.data||[];
+    DATA.infak = inf.data||[];
+    DATA.kas = kas.data||[];
+    DATA.pengaturan = peng.data||[];
+
+    renderDashboard(dash.data);
+    renderAnggota();
+    isiFilterTahun('infakTahun');
+    renderIuran('infak');
+    if(!MODE_WARGA){
+      renderKas();
+      isiFormPengaturan();
+      renderPengguna();
+    }
+  }catch(err){
+    toast('Gagal memuat data: '+err.message, false);
+  }
+  tampilkanLoading(false);
+}
+
+/* ==================== DASHBOARD ==================== */
+function renderDashboard(d){
+  if(!d) return;
+  const kartu = [
+    {label:'Total Warga', nilai:d.totalKK, ikon:'fa-users', format:false, warna:'#1e88e5'},
+    {label:'Infak Bulan Ini', nilai:d.totalInfakBulanIni, ikon:'fa-hand-holding-dollar', warna:'#2e7d32'},
+    {label:'Total Dana Infak', nilai:d.totalDanaInfak, ikon:'fa-heart', warna:'#d81b60'},
+    {label:'Saldo Infak Saat Ini', nilai:d.saldoInfakSaatIni, ikon:'fa-wallet', warna:'#6a1b9a'},
+    {label:'Pengeluaran Bulan Ini', nilai:d.pengeluaranBulanIni, ikon:'fa-arrow-trend-down', warna:'#ef6c00'},
+    {label:'Pengeluaran Tahun Ini', nilai:d.pengeluaranTahunIni, ikon:'fa-calendar-minus', warna:'#c62828'},
+  ];
+  document.getElementById('gridDashboard').innerHTML = kartu.map(k=>`
+    <div class="kartuStat" style="--warna:${k.warna}">
+      <div class="ikon"><i class="fa-solid ${k.ikon}"></i></div>
+      <div><div class="label">${k.label}</div><div class="nilai">${k.format===false? k.nilai : rupiah(k.nilai)}</div></div>
+    </div>`).join('');
+}
+
+/* ==================== ANGGOTA ==================== */
+function renderAnggota(){
+  const q = (document.getElementById('cariAnggota').value||'').toLowerCase();
+  const data = DATA.anggota
+    .filter(a => String(a.NamaKK||'').toLowerCase().includes(q))
+    .sort((a,b)=> String(a.NamaKK||'').localeCompare(String(b.NamaKK||''), 'id', {sensitivity:'base'}));
+  const tbody = document.getElementById('tbodyAnggota');
+  if(!data.length){ tbody.innerHTML = '<tr><td colspan="5" class="kosong">Tidak ada data anggota</td></tr>'; return; }
+  tbody.innerHTML = data.map((a,idx)=>`
+    <tr>
+      <td>${idx+1}</td><td>${a.NamaKK}</td>
+      <td>${formatTanggal(a.TanggalBergabung)}</td>
+      <td><span class="badge ${a.Status==='Aktif'?'badge-hijau':'badge-abu'}">${a.Status}</span></td>
+      <td class="aksiSel hanyaAdmin">
+        <button class="edit" onclick='bukaModalAnggota(${JSON.stringify(a).replace(/'/g,"&apos;")})'><i class="fa-solid fa-pen"></i></button>
+        <button class="hapus" onclick="hapusAnggota('${a.NomorAnggota}')"><i class="fa-solid fa-trash"></i></button>
+      </td>
+    </tr>`).join('');
+}
+function formatTanggal(v){
+  if(!v) return '-';
+  const d = new Date(v);
+  if(isNaN(d)) return v;
+  return d.toLocaleDateString('id-ID', {day:'2-digit', month:'short', year:'numeric'});
+}
+
+let editNomorAnggota = null;
+function bukaModalAnggota(data){
+  editAnggotaMode = !!data;
+  editNomorAnggota = data?.NomorAnggota || null;
+  document.getElementById('judulModalAnggota').textContent = data ? 'Edit Anggota' : 'Tambah Anggota';
+  document.getElementById('fNamaKK').value = data?.NamaKK || '';
+  document.getElementById('fTglGabung').value = data?.TanggalBergabung ? new Date(data.TanggalBergabung).toISOString().slice(0,10) : '';
+  document.getElementById('fStatusAnggota').value = data?.Status || 'Aktif';
+  bukaModal('modalAnggota');
+}
+
+document.getElementById('formAnggota').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const data = {
+    namaKK: document.getElementById('fNamaKK').value.trim(),
+    tanggalBergabung: document.getElementById('fTglGabung').value,
+    status: document.getElementById('fStatusAnggota').value
+  };
+  if(editAnggotaMode) data.nomorAnggota = editNomorAnggota;
+  tampilkanLoading(true);
+  try{
+    const hasil = await apiPost(editAnggotaMode ? 'updateAnggota' : 'simpanAnggota', {data});
+    if(hasil.success){
+      toast(hasil.message);
+      tutupModal('modalAnggota');
+      await muatSemuaData();
+    } else toast(hasil.message, false);
+  }catch(err){ toast('Gagal menyimpan: '+err.message, false); }
+  tampilkanLoading(false);
+});
+
+async function hapusAnggota(nomor){
+  if(!confirm('Yakin ingin menghapus anggota ini? Data yang dihapus tidak dapat dikembalikan.')) return;
+  tampilkanLoading(true);
+  try{
+    const hasil = await apiPost('hapusAnggota', {nomorAnggota:nomor});
+    if(hasil.success){ toast(hasil.message); await muatSemuaData(); } else toast(hasil.message,false);
+  }catch(err){ toast('Gagal menghapus: '+err.message,false); }
+  tampilkanLoading(false);
+}
+
+/* ==================== FILTER TAHUN ==================== */
+function isiFilterTahun(idSelect){
+  const sel = document.getElementById(idSelect);
+  const thSekarang = new Date().getFullYear();
+  sel.innerHTML='';
+  for(let t=thSekarang+1; t>=thSekarang-4; t--){
+    sel.innerHTML += `<option value="${t}" ${t===thSekarang?'selected':''}>${t}</option>`;
+  }
+}
+
+/* ==================== INFAK ==================== */
+function renderIuran(jenis){
+  const tahun = document.getElementById('infakTahun').value || new Date().getFullYear();
+  const q = (document.getElementById('cariInfak').value||'').toLowerCase();
+  const sumberData = DATA.infak;
+
+  // gabungkan seluruh anggota aktif dengan data iuran yang ada agar anggota tanpa data tetap tampil
+  const gabungan = DATA.anggota.filter(a=>a.Status==='Aktif').map(a=>{
+    const found = sumberData.find(d => String(d.NomorAnggota)===String(a.NomorAnggota) && String(d.Tahun)===String(tahun));
+    return found || { NomorAnggota:a.NomorAnggota, Nama:a.NamaKK, Tahun:tahun, Total:0, Status:'Belum Lunas' };
+  }).filter(d => String(d.Nama||'').toLowerCase().includes(q))
+    .sort((a,b)=> String(a.Nama||'').localeCompare(String(b.Nama||''), 'id', {sensitivity:'base'}));
+
+  const thead = document.getElementById('theadInfak');
+  thead.innerHTML = `<th>No.</th><th>Nama</th>${BULAN.map(b=>`<th>${b.slice(0,3)}</th>`).join('')}<th>Total</th><th class="hanyaAdmin">Aksi</th>`;
+
+  const tbody = document.getElementById('tbodyInfak');
+  if(!gabungan.length){ tbody.innerHTML = `<tr><td colspan="16" class="kosong">Tidak ada data</td></tr>`; return; }
+
+  tbody.innerHTML = gabungan.map((d,idx)=>`
+    <tr class="${d.Status==='Lunas'?'selLunas':'selBelum'}">
+      <td>${idx+1}</td>
+      <td style="font-weight:600;">${d.Nama}</td>
+      ${BULAN.map(b => `<td>${Number(d[b])>0 ? rupiah(d[b]) : '-'}</td>`).join('')}
+      <td style="font-weight:700;">${rupiah(d.Total)}</td>
+      <td class="aksiSel hanyaAdmin">
+        <button class="edit" onclick='bukaModalBayar("${d.NomorAnggota}","${(d.Nama||'').replace(/"/g,'')}")'><i class="fa-solid fa-plus"></i></button>
+      </td>
+    </tr>`).join('');
+}
+
+function bukaModalBayar(nomorAnggota, nama){
+  bayarKonteks = {nomorAnggota, nama};
+  document.getElementById('judulModalBayar').textContent = 'Input Pembayaran Infak';
+  document.getElementById('bayarNama').value = nama;
+  const selBulan = document.getElementById('bayarBulan');
+  selBulan.innerHTML = BULAN.map(b=>`<option value="${b}">${b}</option>`).join('');
+  selBulan.value = BULAN[new Date().getMonth()];
+  document.getElementById('bayarTahun').value = document.getElementById('infakTahun').value || new Date().getFullYear();
+  document.getElementById('bayarNominal').value = '';
+  bukaModal('modalBayar');
+}
+
+document.getElementById('formBayar').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const data = {
+    nomorAnggota: bayarKonteks.nomorAnggota,
+    nama: bayarKonteks.nama,
+    tahun: document.getElementById('bayarTahun').value,
+    bulan: document.getElementById('bayarBulan').value,
+    nominal: document.getElementById('bayarNominal').value
+  };
+  tampilkanLoading(true);
+  try{
+    const hasil = await apiPost('simpanIuran', {data});
+    if(hasil.success){
+      toast(hasil.message);
+      tutupModal('modalBayar');
+      await muatSemuaData();
+    } else toast(hasil.message,false);
+  }catch(err){ toast('Gagal menyimpan: '+err.message,false); }
+  tampilkanLoading(false);
+});
+
+/* ==================== PENGELUARAN (dulu KAS) ==================== */
+function renderKas(){
+  const q = (document.getElementById('cariKas').value||'').toLowerCase();
+  const data = DATA.kas.filter(k => String(k.Uraian||'').toLowerCase().includes(q));
+  const tbody = document.getElementById('tbodyKas');
+  if(!data.length){ tbody.innerHTML = '<tr><td colspan="5" class="kosong">Belum ada data pengeluaran</td></tr>'; return; }
+  tbody.innerHTML = data.slice().reverse().map(k=>`
+    <tr>
+      <td>${formatTanggal(k.Tanggal)}</td><td>${k.Uraian}</td>
+      <td>${rupiah(k.Nominal)}</td><td style="font-weight:700;">${rupiah(k.Total)}</td>
+      <td class="aksiSel"><button class="hapus" onclick="hapusKas('${k.ID}')"><i class="fa-solid fa-trash"></i></button></td>
+    </tr>`).join('');
+}
+function bukaModalKas(){
+  document.getElementById('formKas').reset();
+  document.getElementById('kTanggal').value = new Date().toISOString().slice(0,10);
+  bukaModal('modalKas');
+}
+document.getElementById('formKas').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const data = {
+    tanggal: document.getElementById('kTanggal').value,
+    uraian: document.getElementById('kUraian').value.trim(),
+    nominal: document.getElementById('kNominal').value,
+    dicatatOleh: USER?.nama || ''
+  };
+  tampilkanLoading(true);
+  try{
+    const hasil = await apiPost('simpanPengeluaran', {data});
+    if(hasil.success){ toast(hasil.message); tutupModal('modalKas'); await muatSemuaData(); } else toast(hasil.message,false);
+  }catch(err){ toast('Gagal menyimpan: '+err.message,false); }
+  tampilkanLoading(false);
+});
+async function hapusKas(id){
+  if(!confirm('Yakin ingin menghapus data pengeluaran ini?')) return;
+  tampilkanLoading(true);
+  try{
+    const hasil = await apiPost('hapusPengeluaran', {id});
+    if(hasil.success){ toast(hasil.message); await muatSemuaData(); } else toast(hasil.message,false);
+  }catch(err){ toast('Gagal menghapus: '+err.message,false); }
+  tampilkanLoading(false);
+}
+
+/* ==================== LAPORAN ==================== */
+function tampilkanLaporanInfakBulanan(){
+  const now = new Date();
+  const bulanIni = BULAN[now.getMonth()];
+  const tahun = now.getFullYear();
+  const gab = DATA.anggota.filter(a=>a.Status==='Aktif').map(a=>{
+    const i = DATA.infak.find(d=>String(d.NomorAnggota)===String(a.NomorAnggota) && String(d.Tahun)===String(tahun));
+    const inf = i ? Number(i[bulanIni])||0 : 0;
+    return {nama:a.NamaKK, inf};
+  }).sort((a,b)=> String(a.nama||'').localeCompare(String(b.nama||''), 'id', {sensitivity:'base'}));
+  const totalInf = gab.reduce((s,g)=>s+g.inf,0);
+
+  document.getElementById('judulLaporanHasil').textContent = `Laporan Infak Bulanan - ${bulanIni} ${tahun}`;
+  document.getElementById('theadLaporanHasil').innerHTML = '<th>No.</th><th>Nama</th><th>Infak</th>';
+  document.getElementById('tbodyLaporanHasil').innerHTML = (gab.length ? gab.map((g,idx)=>`
+    <tr><td>${idx+1}</td><td>${g.nama}</td><td>${rupiah(g.inf)}</td></tr>`).join('')
+    : '<tr><td colspan="3" class="kosong">Tidak ada data</td></tr>')
+    + `<tr style="background:#f4f6f5;font-weight:700;"><td colspan="2">TOTAL</td><td>${rupiah(totalInf)}</td></tr>`;
+  document.getElementById('panelLaporanHasil').style.display='block';
+  document.getElementById('panelLaporanHasil').scrollIntoView({behavior:'smooth'});
+}
+
+function tampilkanLaporanInfakTahunan(){
+  const tahun = new Date().getFullYear();
+  const dataInfTahun = DATA.infak.filter(d=>String(d.Tahun)===String(tahun));
+  const rekapBulan = BULAN.map(b=>{
+    const inf = dataInfTahun.reduce((s,d)=>s+(Number(d[b])||0),0);
+    return {bulan:b, inf};
+  });
+  const totalInf = rekapBulan.reduce((s,r)=>s+r.inf,0);
+
+  document.getElementById('judulLaporanHasil').textContent = 'Laporan Infak Tahunan '+tahun;
+  document.getElementById('theadLaporanHasil').innerHTML = '<th>Bulan</th><th>Infak</th>';
+  document.getElementById('tbodyLaporanHasil').innerHTML = rekapBulan.map(r=>`
+    <tr><td>${r.bulan}</td><td>${rupiah(r.inf)}</td></tr>`).join('')
+    + `<tr style="background:#f4f6f5;font-weight:700;"><td>TOTAL</td><td>${rupiah(totalInf)}</td></tr>`;
+  document.getElementById('panelLaporanHasil').style.display='block';
+  document.getElementById('panelLaporanHasil').scrollIntoView({behavior:'smooth'});
+}
+
+function tampilkanLaporanPengeluaranBulanan(){
+  const now = new Date();
+  const bulanIni = BULAN[now.getMonth()];
+  const tahun = now.getFullYear();
+  const data = DATA.kas.filter(k=> new Date(k.Tanggal).getFullYear()===tahun && new Date(k.Tanggal).getMonth()===now.getMonth());
+  const total = data.reduce((s,k)=>s+Number(k.Nominal||0),0);
+
+  document.getElementById('judulLaporanHasil').textContent = `Laporan Pengeluaran Bulanan - ${bulanIni} ${tahun}`;
+  document.getElementById('theadLaporanHasil').innerHTML = '<th>Tanggal</th><th>Uraian</th><th>Nominal</th>';
+  document.getElementById('tbodyLaporanHasil').innerHTML = (data.length ? data.map(k=>`
+    <tr><td>${formatTanggal(k.Tanggal)}</td><td>${k.Uraian}</td><td>${rupiah(k.Nominal)}</td></tr>`).join('')
+    : '<tr><td colspan="3" class="kosong">Tidak ada pengeluaran bulan ini</td></tr>')
+    + `<tr style="background:#f4f6f5;font-weight:700;"><td colspan="2">TOTAL</td><td>${rupiah(total)}</td></tr>`;
+  document.getElementById('panelLaporanHasil').style.display='block';
+  document.getElementById('panelLaporanHasil').scrollIntoView({behavior:'smooth'});
+}
+
+function tampilkanLaporanPengeluaranTahunan(){
+  const tahun = new Date().getFullYear();
+  const rekapBulan = BULAN.map((b, idx)=>{
+    const total = DATA.kas.filter(k=> new Date(k.Tanggal).getFullYear()===tahun && new Date(k.Tanggal).getMonth()===idx).reduce((s,k)=>s+Number(k.Nominal||0),0);
+    return {bulan:b, total};
+  });
+  const totalTahun = rekapBulan.reduce((s,r)=>s+r.total,0);
+
+  document.getElementById('judulLaporanHasil').textContent = 'Laporan Pengeluaran Tahunan '+tahun;
+  document.getElementById('theadLaporanHasil').innerHTML = '<th>Bulan</th><th>Total Pengeluaran</th>';
+  document.getElementById('tbodyLaporanHasil').innerHTML = rekapBulan.map(r=>`
+    <tr><td>${r.bulan}</td><td>${rupiah(r.total)}</td></tr>`).join('')
+    + `<tr style="background:#f4f6f5;font-weight:700;"><td>TOTAL</td><td>${rupiah(totalTahun)}</td></tr>`;
+  document.getElementById('panelLaporanHasil').style.display='block';
+  document.getElementById('panelLaporanHasil').scrollIntoView({behavior:'smooth'});
+}
+
+/* ==================== PENGATURAN ==================== */
+function isiFormPengaturan(){
+  const ambil = key => DATA.pengaturan.find(p=>p.Key===key)?.Value || '';
+  document.getElementById('setNamaRT').value = ambil('NamaRT');
+  document.getElementById('setInfWajib').value = ambil('IuranInfakWajib');
+}
+document.getElementById('formPengaturan').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const data = {
+    NamaRT: document.getElementById('setNamaRT').value,
+    IuranInfakWajib: document.getElementById('setInfWajib').value
+  };
+  tampilkanLoading(true);
+  try{
+    const hasil = await apiPost('simpanPengaturan', {data});
+    if(hasil.success){ toast(hasil.message); await muatSemuaData(); } else toast(hasil.message,false);
+  }catch(err){ toast('Gagal menyimpan: '+err.message,false); }
+  tampilkanLoading(false);
+});
+document.getElementById('formGantiPassword').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const lama = document.getElementById('pwLama').value;
+  const baru = document.getElementById('pwBaru').value;
+  tampilkanLoading(true);
+  try{
+    const hasil = await apiPost('gantiPassword', {username:USER.username, lama, baru});
+    if(hasil.success){ toast(hasil.message); document.getElementById('formGantiPassword').reset(); } else toast(hasil.message,false);
+  }catch(err){ toast('Gagal mengganti password: '+err.message,false); }
+  tampilkanLoading(false);
+});
+
+/* ==================== MANAJEMEN PENGGUNA ==================== */
+async function renderPengguna(){
+  try{
+    const hasil = await apiGet('getPengguna');
+    const data = hasil.data || [];
+    const tbody = document.getElementById('tbodyPengguna');
+    if(!data.length){ tbody.innerHTML = '<tr><td colspan="5" class="kosong">Belum ada pengguna</td></tr>'; return; }
+    tbody.innerHTML = data.map(u=>`
+      <tr>
+        <td>${u.Username}</td><td>${u.Nama}</td><td>${u.Role}</td>
+        <td><span class="badge ${u.Status==='Aktif'?'badge-hijau':'badge-abu'}">${u.Status}</span></td>
+        <td class="aksiSel">${u.Username!==USER.username ? `<button class="hapus" onclick="hapusPengguna('${u.Username}')"><i class="fa-solid fa-trash"></i></button>` : '<span style="color:#bbb;font-size:11.5px;">Anda</span>'}</td>
+      </tr>`).join('');
+  }catch(err){ /* biarkan senyap jika gagal, panel lain tetap berjalan */ }
+}
+function bukaModalPengguna(){
+  document.getElementById('formPengguna').reset();
+  bukaModal('modalPengguna');
+}
+document.getElementById('formPengguna').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const data = {
+    username: document.getElementById('pUsername').value.trim(),
+    nama: document.getElementById('pNama').value.trim(),
+    password: document.getElementById('pPassword').value,
+    role: document.getElementById('pRole').value
+  };
+  tampilkanLoading(true);
+  try{
+    const hasil = await apiPost('tambahPengguna', {data});
+    if(hasil.success){ toast(hasil.message); tutupModal('modalPengguna'); await renderPengguna(); } else toast(hasil.message,false);
+  }catch(err){ toast('Gagal menyimpan: '+err.message,false); }
+  tampilkanLoading(false);
+});
+async function hapusPengguna(username){
+  if(!confirm('Yakin ingin menghapus pengguna "'+username+'"?')) return;
+  tampilkanLoading(true);
+  try{
+    const hasil = await apiPost('hapusPengguna', {username});
+    if(hasil.success){ toast(hasil.message); await renderPengguna(); } else toast(hasil.message,false);
+  }catch(err){ toast('Gagal menghapus: '+err.message,false); }
+  tampilkanLoading(false);
+}
+
+/* ==================== CETAK & EKSPOR ==================== */
+function ambilNamaRT(){
+  const item = (DATA.pengaturan||[]).find(p=>p.Key==='NamaRT');
+  return (item && item.Value) ? item.Value : 'RT';
+}
+
+function cetakTabel(idTabel, judul){
+  const tabelAsli = document.getElementById(idTabel);
+  const jumlahKolom = tabelAsli.querySelectorAll('thead th').length;
+  const isiTabel = tabelAsli.outerHTML;
+  const namaRT = ambilNamaRT();
+  const landscape = jumlahKolom > 7;
+  const jendela = window.open('', '_blank');
+  jendela.document.write(`
+    <html><head><title>${judul}</title>
+    <style>
+      @page{ size: A4 ${landscape?'landscape':'portrait'}; margin: 14mm; }
+      *{box-sizing:border-box;}
+      body{font-family:'Segoe UI',Arial,sans-serif;color:#1a1a1a;padding:0;margin:0;}
+      .kop{display:flex;align-items:center;gap:14px;border-bottom:3px solid #2e7d32;padding-bottom:12px;margin-bottom:6px;}
+      .kop .lambang{width:52px;height:52px;border-radius:50%;background:#e8f5e9;color:#2e7d32;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;}
+      .kop h1{font-size:16px;color:#1b5e20;margin:0;}
+      .kop p{font-size:11.5px;color:#666;margin:2px 0 0;}
+      .judulLaporan{font-size:14px;font-weight:700;color:#1b5e20;margin:14px 0 2px;text-align:center;text-transform:uppercase;letter-spacing:.4px;}
+      .subJudul{font-size:11px;color:#777;text-align:center;margin-bottom:16px;}
+      table{border-collapse:collapse;width:100%;font-size:11px;}
+      th,td{border:1px solid #cfd8cf;padding:6px 9px;text-align:left;}
+      th{background:#2e7d32;color:#ffffff;font-weight:700;text-transform:uppercase;font-size:9.5px;letter-spacing:.2px;}
+      tbody tr:nth-child(even){background:#f4f8f4;}
+      tbody tr:hover{background:#eaf3ea;}
+      .badge{padding:2px 9px;border-radius:20px;font-size:9.5px;font-weight:700;display:inline-block;}
+      .badge-hijau{background:#e6f4ea;color:#1b7e34;}
+      .badge-merah{background:#fdeaea;color:#c62828;}
+      .badge-abu{background:#eceff1;color:#607d8b;}
+      .kaki{display:flex;justify-content:space-between;margin-top:42px;font-size:11px;}
+      .kaki .kolom{width:220px;text-align:center;}
+      .kaki .garis{margin-top:52px;border-bottom:1px solid #333;}
+      .catatanCetak{margin-top:18px;font-size:10px;color:#888;text-align:right;}
+      @media print{ .noPrint{display:none;} }
+    </style></head>
+    <body>
+      <div class="kop">
+        <div class="lambang">🏠</div>
+        <div>
+          <h1>${namaRT}</h1>
+          <p>Sistem Infak Kematian Warga &mdash; Dokumen Resmi</p>
+        </div>
+      </div>
+      <div class="judulLaporan">${judul}</div>
+      <div class="subJudul">Dicetak pada ${new Date().toLocaleString('id-ID', {dateStyle:'full', timeStyle:'short'})}</div>
+      ${isiTabel}
+      <div class="kaki">
+        <div class="kolom">Mengetahui,<br>Ketua RT
+          <div class="garis"></div>
+          ( &nbsp; ${namaRT} &nbsp; )
+        </div>
+        <div class="kolom">Dibuat oleh,<br>Petugas/Bendahara
+          <div class="garis"></div>
+          ( &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; )
+        </div>
+      </div>
+      <div class="catatanCetak">Dokumen ini dihasilkan otomatis oleh Sistem Infak Kematian Warga RT.</div>
+      <script>window.onload=()=>{window.print();}<\/script>
+    </body></html>`);
+  jendela.document.close();
+}
+
+function tabelKeArray(idTabel){
+  const table = document.getElementById(idTabel);
+  const rows = Array.from(table.querySelectorAll('tr'));
+  return rows.map(row => Array.from(row.querySelectorAll('th,td')).map(cell => cell.innerText.trim()));
+}
+
+// Ubah teks "Rp12.345" hasil tampilan menjadi angka murni agar Excel bisa memformatnya sebagai mata uang
+function rupiahKeAngka(teks){
+  if(/^Rp[\d.,]+$/.test(teks)){
+    const angka = Number(teks.replace(/^Rp/, '').replace(/\./g, '').replace(/,/g, '.'));
+    if(!isNaN(angka)) return angka;
+  }
+  return null;
+}
+
+function exportExcel(idTabel, namaFile, judul){
+  const arr = tabelKeArray(idTabel);
+  const namaRT = ambilNamaRT();
+  const judulLaporan = judul || namaFile.replace(/_/g,' ');
+  const tglCetak = new Date().toLocaleString('id-ID', {dateStyle:'full', timeStyle:'short'});
+
+  // baris kop di atas tabel: nama RT, judul laporan, tanggal cetak, baris kosong pemisah
+  const dataLengkap = [
+    [namaRT],
+    [judulLaporan],
+    ['Dicetak pada ' + tglCetak],
+    [],
+    ...arr
+  ];
+
+  const ws = XLSX.utils.aoa_to_sheet(dataLengkap);
+  const barisHeaderTabel = 5; // baris ke-5 (index 4) adalah header kolom tabel
+  const jumlahKolom = arr[0].length;
+
+  // gabung sel judul agar membentang selebar tabel
+  ws['!merges'] = [
+    { s:{r:0,c:0}, e:{r:0,c:Math.max(jumlahKolom-1,0)} },
+    { s:{r:1,c:0}, e:{r:1,c:Math.max(jumlahKolom-1,0)} },
+    { s:{r:2,c:0}, e:{r:2,c:Math.max(jumlahKolom-1,0)} }
+  ];
+
+  // ubah sel bernilai "Rp..." menjadi angka murni + format mata uang, agar rapi & bisa dihitung di Excel
+  const range = XLSX.utils.decode_range(ws['!ref']);
+  for(let R = barisHeaderTabel; R <= range.e.r; R++){
+    for(let C = range.s.c; C <= range.e.c; C++){
+      const addr = XLSX.utils.encode_cell({r:R, c:C});
+      const sel = ws[addr];
+      if(!sel || typeof sel.v !== 'string') continue;
+      const angka = rupiahKeAngka(sel.v);
+      if(angka !== null){
+        sel.t = 'n';
+        sel.v = angka;
+        sel.z = '"Rp"#,##0';
+      }
+    }
+  }
+
+  // lebar kolom otomatis menyesuaikan isi terpanjang
+  ws['!cols'] = arr[0].map((_, colIdx) => {
+    const panjangMaks = Math.max(...arr.map(baris => String(baris[colIdx]||'').length), judulLaporan.length/jumlahKolom);
+    return { wch: Math.min(Math.max(panjangMaks + 3, 10), 40) };
+  });
+
+  // baris judul & tanggal dibiarkan tinggi normal, baris header tabel dibuat sedikit lebih tinggi
+  ws['!rows'] = [{hpt:20},{hpt:16},{hpt:14},{hpt:8},{hpt:20}];
+
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Data');
+  XLSX.writeFile(wb, namaFile + '.xlsx');
+  toast('File Excel berhasil diunduh');
+}
+
+function exportPDF(idTabel, judul){
+  const { jsPDF } = window.jspdf;
+  const arr = tabelKeArray(idTabel);
+  const namaRT = ambilNamaRT();
+  const landscape = arr[0].length > 7;
+  const doc = new jsPDF({orientation: landscape ? 'landscape' : 'portrait', unit:'mm', format:'a4'});
+  const lebarHalaman = doc.internal.pageSize.getWidth();
+
+  doc.autoTable({
+    head: [arr[0]],
+    body: arr.slice(1),
+    startY: 30,
+    margin: { top: 30 },
+    theme: 'grid',
+    headStyles: { fillColor: [46,125,50], textColor: 255, fontSize: 8.5, halign:'left', lineColor:[255,255,255], lineWidth:0.1 },
+    styles: { fontSize: 8, cellPadding: 3, lineColor:[220,228,220], lineWidth:0.15, textColor:[30,30,30] },
+    alternateRowStyles: { fillColor: [244,248,244] },
+    didParseCell: function(data){
+      // baris TOTAL ditebalkan agar menonjol
+      const teksBarisPertama = String(data.row.raw && data.row.raw[0] || '').toUpperCase();
+      if(data.section==='body' && teksBarisPertama.includes('TOTAL')){
+        data.cell.styles.fontStyle = 'bold';
+        data.cell.styles.fillColor = [200,230,201];
+        data.cell.styles.textColor = [27,94,32];
+      }
+    },
+    didDrawPage: function(data){
+      // ==== kop halaman ====
+      doc.setFillColor(46,125,50);
+      doc.rect(0, 0, lebarHalaman, 20, 'F');
+      doc.setTextColor(255,255,255);
+      doc.setFontSize(13);
+      doc.setFont(undefined, 'bold');
+      doc.text(namaRT, 14, 9);
+      doc.setFontSize(8.5);
+      doc.setFont(undefined, 'normal');
+      doc.text('Sistem Infak Kematian Warga', 14, 15);
+
+      doc.setTextColor(27,94,32);
+      doc.setFontSize(11);
+      doc.setFont(undefined, 'bold');
+      doc.text(judul, 14, 26);
+      doc.setFontSize(8);
+      doc.setTextColor(130,130,130);
+      doc.setFont(undefined, 'normal');
+      doc.text('Dicetak pada ' + new Date().toLocaleString('id-ID', {dateStyle:'long', timeStyle:'short'}), 14, 30.5);
+
+      // ==== kaki halaman ====
+      const tinggiHalaman = doc.internal.pageSize.getHeight();
+      doc.setDrawColor(220,220,220);
+      doc.line(14, tinggiHalaman-12, lebarHalaman-14, tinggiHalaman-12);
+      doc.setFontSize(7.5);
+      doc.setTextColor(150,150,150);
+      doc.text('Dokumen dihasilkan otomatis oleh Sistem Infak Kematian Warga RT', 14, tinggiHalaman-7);
+      doc.text('Halaman ' + doc.internal.getNumberOfPages(), lebarHalaman-14, tinggiHalaman-7, { align:'right' });
+    }
+  });
+  doc.save(judul.replace(/\s+/g,'_') + '.pdf');
+  toast('File PDF berhasil diunduh');
+}
+
+/* ==================== INISIALISASI ==================== */
+if(USER){ masukAplikasi(); }
+</script>
+</body>
+</html>
