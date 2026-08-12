@@ -7,8 +7,8 @@
 
 <!-- Ikon -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-<!-- Export Excel -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<!-- Export Excel (mendukung warna sel, font, dan border) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
 <!-- Export PDF -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
@@ -245,7 +245,7 @@ tbody tr:hover{background:#fafcfa;}
 <!-- ==================== KONFIGURASI API ==================== -->
 <script>
   // GANTI dengan URL Web App hasil deploy Google Apps Script Anda (harus diakhiri /exec)
-  const API_URL = "https://script.google.com/macros/s/AKfycbxwPmc1ES2E7adCORwj_RKrhiqpqx6XXYUl_7XRx1KgAb8S-B0uGsV39Dn1eh8SSD3S4g/exec";
+  const API_URL = "https://script.google.com/macros/s/AKfycbw2YH5vxx5SFqlC68ooY2e--R2RMzN_GlfQdyjhztUxeroAlJoxLQAKunmmCl54P8uBSg/exec";
 </script>
 
 <!-- ==================== LOADING & TOAST ==================== -->
@@ -255,9 +255,9 @@ tbody tr:hover{background:#fafcfa;}
 <!-- ==================== LAYAR LOGIN ==================== -->
 <div id="layarLogin">
   <div class="kartuLogin">
-    <div class="logo"><i class="fa-solid fa-hand-holding-heart"></i></div>
+    <img src="https://i.ibb.co.com/7d1VcmGp/logo-rt-black.png" alt="rt10" style="width:150px;height:150px;">
     <h1>Iuran Infak Kematian</h1>
-    <p class="sub">Warga RT.010 RW.04</p>
+    <p class="sub">Warga RT. 010 RW. 04</p>
     <form id="formLogin">
       <div class="grup">
         <label>Username</label>
@@ -269,7 +269,7 @@ tbody tr:hover{background:#fafcfa;}
       </div>
       <button type="submit" class="btn btn-hijau"><i class="fa-solid fa-right-to-bracket"></i> Masuk</button>
     </form>
-    <span class="linkPublik" onclick="bukaPublik()">Warga? Lihat total infak tanpa login</span>
+    <span class="linkPublik" onclick="bukaPublik()">Warga RT.010? Lihat tanpa login</span>
   </div>
 </div>
 
@@ -278,7 +278,7 @@ tbody tr:hover{background:#fafcfa;}
 <div class="wrap">
   <!-- SIDEBAR -->
   <div class="sidebar" id="sidebar">
-    <div class="brand"><i class="fa-solid fa-hand-holding-heart"></i><span>Dana Infak<br>Kematian Warga RT.010 RW.04</span></div>
+    <div class="brand"><i class="fa-solid fa-hand-holding-heart"></i><span>Iuran Infak Kematian<br>Warga RT.010 RW.04</span></div>
     <ul class="nav" id="navMenu">
       <li><a data-target="halDashboard" class="aktif" onclick="pindahHalaman('halDashboard',this)"><i class="fa-solid fa-gauge-high"></i> Dashboard</a></li>
       <li><a data-target="halAnggota" onclick="pindahHalaman('halAnggota',this)"><i class="fa-solid fa-users"></i> Data Anggota</a></li>
@@ -292,7 +292,7 @@ tbody tr:hover{background:#fafcfa;}
 
   <!-- KONTEN -->
   <div class="konten">
-    <div class="pitaWarga"><i class="fa-solid fa-eye"></i> Mode Warga — Anda hanya dapat melihat data, tidak dapat menambah, mengubah, atau menghapus.</div>
+    <div class="pitaWarga"><i class="fa-solid fa-eye"></i> Mode Warga RT.010</div>
     <div class="topbar">
       <div style="display:flex;align-items:center;gap:10px;">
         <button class="btnHamburger" onclick="document.getElementById('sidebar').classList.toggle('tampil')"><i class="fa-solid fa-bars"></i></button>
@@ -313,7 +313,7 @@ tbody tr:hover{background:#fafcfa;}
       <div class="panel">
         <h2><i class="fa-solid fa-circle-info"></i> Ringkasan</h2>
         <p style="font-size:13px;color:#555;line-height:1.7;">
-          Selamat datang di sistem pengelolaan Dana infak kematian warga RT.010 RW.04
+          Selamat datang di sistem pengelolaan iuran infak kematian warga RT.010 RW.04
           Gunakan menu di sebelah kiri untuk mengelola data anggota, mencatat pembayaran bulanan,
           mencatat pengeluaran, hingga mencetak laporan resmi.
         </p>
@@ -336,7 +336,7 @@ tbody tr:hover{background:#fafcfa;}
         </div>
         <div class="tabelWrap tabelScroll">
           <table id="tabelAnggota">
-            <thead><tr><th>No.</th><th>Nama Warga</th><th>Tgl Bergabung</th><th>Status</th><th class="hanyaAdmin">Aksi</th></tr></thead>
+            <thead><tr><th>No.</th><th>Nama Kepala Keluarga</th><th>Tgl Bergabung</th><th>Status</th><th class="hanyaAdmin">Aksi</th></tr></thead>
             <tbody id="tbodyAnggota"><tr><td colspan="5" class="kosong">Memuat data...</td></tr></tbody>
           </table>
         </div>
@@ -382,7 +382,7 @@ tbody tr:hover{background:#fafcfa;}
         </div>
         <div class="tabelWrap">
           <table id="tabelKas">
-            <thead><tr><th>Tanggal</th><th>Uraian</th><th>Nominal</th><th>Total s.d. Saat Ini</th><th>Aksi</th></tr></thead>
+            <thead><tr><th>Tanggal</th><th>Uraian</th><th>Nominal</th><th>Total Saldo Saat Ini</th><th>Aksi</th></tr></thead>
             <tbody id="tbodyKas"><tr><td colspan="5" class="kosong">Memuat data...</td></tr></tbody>
           </table>
         </div>
@@ -458,7 +458,7 @@ tbody tr:hover{background:#fafcfa;}
     <div class="headModal"><h3 id="judulModalAnggota">Tambah Anggota</h3><button class="tutup" onclick="tutupModal('modalAnggota')">&times;</button></div>
     <form id="formAnggota">
       <div class="bodyModal gridForm">
-        <div class="grup full"><label>Nama Warga</label><input type="text" id="fNamaKK" required></div>
+        <div class="grup full"><label>Nama</label><input type="text" id="fNamaKK" required></div>
         <div class="grup full"><label>Tanggal Bergabung</label><input type="date" id="fTglGabung" required></div>
         <div class="grup full"><label>Status</label>
           <select id="fStatusAnggota"><option value="Aktif">Aktif</option><option value="Tidak Aktif">Tidak Aktif</option></select>
@@ -562,10 +562,19 @@ function tutupModal(id){document.getElementById(id).classList.remove('tampil');}
 function bukaModal(id){document.getElementById(id).classList.add('tampil');}
 
 /* ==================== KOMUNIKASI API ==================== */
+async function bacaResponsJSON(res){
+  const teks = await res.text();
+  try{
+    return JSON.parse(teks);
+  }catch(e){
+    console.error('Respons server bukan JSON yang valid:', teks.slice(0,300));
+    throw new Error('Server tidak mengirim data yang valid (bukan format JSON). Pastikan API_URL sudah benar, Web App di-deploy dengan akses "Anyone", dan deploy ulang setelah mengubah Code.gs.');
+  }
+}
 async function apiGet(action, params={}){
   const qs = new URLSearchParams({action, ...params}).toString();
   const res = await fetch(`${API_URL}?${qs}`);
-  return res.json();
+  return bacaResponsJSON(res);
 }
 async function apiPost(action, payload={}){
   const res = await fetch(API_URL, {
@@ -573,7 +582,7 @@ async function apiPost(action, payload={}){
     headers:{'Content-Type':'text/plain;charset=utf-8'}, // hindari preflight CORS pada Apps Script
     body: JSON.stringify({action, ...payload})
   });
-  return res.json();
+  return bacaResponsJSON(res);
 }
 
 /* ==================== LOGIN / LOGOUT ==================== */
@@ -705,7 +714,7 @@ async function muatSemuaData(){
 function renderDashboard(d){
   if(!d) return;
   const kartu = [
-    {label:'Total Warga', nilai:d.totalKK, ikon:'fa-users', format:false, warna:'#1e88e5'},
+    {label:'Total Kepala Keluarga', nilai:d.totalKK, ikon:'fa-users', format:false, warna:'#1e88e5'},
     {label:'Infak Bulan Ini', nilai:d.totalInfakBulanIni, ikon:'fa-hand-holding-dollar', warna:'#2e7d32'},
     {label:'Total Dana Infak', nilai:d.totalDanaInfak, ikon:'fa-heart', warna:'#d81b60'},
     {label:'Saldo Infak Saat Ini', nilai:d.saldoInfakSaatIni, ikon:'fa-wallet', warna:'#6a1b9a'},
@@ -1058,10 +1067,33 @@ function ambilNamaRT(){
   return (item && item.Value) ? item.Value : 'RT';
 }
 
+// Buat salinan tabel tanpa kolom "Aksi" (tombol edit/hapus/tambah) agar tidak ikut tercetak/terekspor
+function tabelTanpaKolomAksi(idTabel){
+  const asli = document.getElementById(idTabel);
+  const klon = asli.cloneNode(true);
+  const barisHeader = klon.querySelector('thead tr');
+  if(!barisHeader) return klon;
+  const selHeader = Array.from(barisHeader.children);
+  const indeksAksi = [];
+  selHeader.forEach((th, idx) => { if(th.textContent.trim().toLowerCase()==='aksi') indeksAksi.push(idx); });
+  if(!indeksAksi.length) return klon;
+  indeksAksi.slice().reverse().forEach(idx => selHeader[idx].remove());
+  klon.querySelectorAll('tbody tr').forEach(tr => {
+    const sel = Array.from(tr.children);
+    if(sel.length === 1 && sel[0].hasAttribute('colspan')){
+      const cs = parseInt(sel[0].getAttribute('colspan'),10) || sel.length;
+      sel[0].setAttribute('colspan', Math.max(cs - indeksAksi.length, 1));
+      return;
+    }
+    indeksAksi.slice().reverse().forEach(idx => { if(sel[idx]) sel[idx].remove(); });
+  });
+  return klon;
+}
+
 function cetakTabel(idTabel, judul){
-  const tabelAsli = document.getElementById(idTabel);
-  const jumlahKolom = tabelAsli.querySelectorAll('thead th').length;
-  const isiTabel = tabelAsli.outerHTML;
+  const tabelBersih = tabelTanpaKolomAksi(idTabel);
+  const jumlahKolom = tabelBersih.querySelectorAll('thead th').length;
+  const isiTabel = tabelBersih.outerHTML;
   const namaRT = ambilNamaRT();
   const landscape = jumlahKolom > 7;
   const jendela = window.open('', '_blank');
@@ -1094,10 +1126,10 @@ function cetakTabel(idTabel, judul){
     </style></head>
     <body>
       <div class="kop">
-        <div class="lambang">🏠</div>
+        <img src="https://i.ibb.co.com/7d1VcmGp/logo-rt-black.png" alt="rt10" style="width:100px;height:100px;">
         <div>
-          <h1>${namaRT}</h1>
-          <p>Sistem Infak Kematian Warga &mdash; Dokumen Resmi</p>
+          <h1>RT. 010 RW. 04</h1>
+          <p>Iuran Infak Kematian Warga</p>
         </div>
       </div>
       <div class="judulLaporan">${judul}</div>
@@ -1113,16 +1145,16 @@ function cetakTabel(idTabel, judul){
           ( &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; )
         </div>
       </div>
-      <div class="catatanCetak">Dokumen ini dihasilkan otomatis oleh Sistem Infak Kematian Warga RT.010</div>
+      <div class="catatanCetak">Dokumen ini dihasilkan otomatis oleh Sistem Infak Kematian Warga RT.010 RW.04</div>
       <script>window.onload=()=>{window.print();}<\/script>
     </body></html>`);
   jendela.document.close();
 }
 
 function tabelKeArray(idTabel){
-  const table = document.getElementById(idTabel);
+  const table = tabelTanpaKolomAksi(idTabel);
   const rows = Array.from(table.querySelectorAll('tr'));
-  return rows.map(row => Array.from(row.querySelectorAll('th,td')).map(cell => cell.innerText.trim()));
+  return rows.map(row => Array.from(row.querySelectorAll('th,td')).map(cell => cell.textContent.replace(/\s+/g,' ').trim()));
 }
 
 // Ubah teks "Rp12.345" hasil tampilan menjadi angka murni agar Excel bisa memformatnya sebagai mata uang
@@ -1134,60 +1166,116 @@ function rupiahKeAngka(teks){
   return null;
 }
 
-function exportExcel(idTabel, namaFile, judul){
+async function exportExcel(idTabel, namaFile, judul){
   const arr = tabelKeArray(idTabel);
+  if(!arr.length){ toast('Tidak ada data untuk diekspor', false); return; }
   const namaRT = ambilNamaRT();
   const judulLaporan = judul || namaFile.replace(/_/g,' ');
   const tglCetak = new Date().toLocaleString('id-ID', {dateStyle:'full', timeStyle:'short'});
-
-  // baris kop di atas tabel: nama RT, judul laporan, tanggal cetak, baris kosong pemisah
-  const dataLengkap = [
-    [namaRT],
-    [judulLaporan],
-    ['Dicetak pada ' + tglCetak],
-    [],
-    ...arr
-  ];
-
-  const ws = XLSX.utils.aoa_to_sheet(dataLengkap);
-  const barisHeaderTabel = 5; // baris ke-5 (index 4) adalah header kolom tabel
   const jumlahKolom = arr[0].length;
 
-  // gabung sel judul agar membentang selebar tabel
-  ws['!merges'] = [
-    { s:{r:0,c:0}, e:{r:0,c:Math.max(jumlahKolom-1,0)} },
-    { s:{r:1,c:0}, e:{r:1,c:Math.max(jumlahKolom-1,0)} },
-    { s:{r:2,c:0}, e:{r:2,c:Math.max(jumlahKolom-1,0)} }
-  ];
+  const HIJAU_TUA = 'FF1B5E20';
+  const HIJAU = 'FF2E7D32';
+  const HIJAU_PUCAT = 'FFE8F5E9';
+  const ZEBRA = 'FFF4F8F4';
+  const TOTAL_BG = 'FFC8E6C9';
+  const ABU_BORDER = 'FFDDE3DD';
+  const PUTIH = 'FFFFFFFF';
 
-  // ubah sel bernilai "Rp..." menjadi angka murni + format mata uang, agar rapi & bisa dihitung di Excel
-  const range = XLSX.utils.decode_range(ws['!ref']);
-  for(let R = barisHeaderTabel; R <= range.e.r; R++){
-    for(let C = range.s.c; C <= range.e.c; C++){
-      const addr = XLSX.utils.encode_cell({r:R, c:C});
-      const sel = ws[addr];
-      if(!sel || typeof sel.v !== 'string') continue;
-      const angka = rupiahKeAngka(sel.v);
-      if(angka !== null){
-        sel.t = 'n';
-        sel.v = angka;
-        sel.z = '"Rp"#,##0';
-      }
-    }
-  }
-
-  // lebar kolom otomatis menyesuaikan isi terpanjang
-  ws['!cols'] = arr[0].map((_, colIdx) => {
-    const panjangMaks = Math.max(...arr.map(baris => String(baris[colIdx]||'').length), judulLaporan.length/jumlahKolom);
-    return { wch: Math.min(Math.max(panjangMaks + 3, 10), 40) };
+  const workbook = new ExcelJS.Workbook();
+  workbook.creator = namaRT;
+  workbook.created = new Date();
+  const sheet = workbook.addWorksheet('Data', {
+    views: [{ state:'frozen', ySplit:5 }],
+    pageSetup: { orientation: jumlahKolom > 7 ? 'landscape' : 'portrait', fitToPage:true, fitToWidth:1 }
   });
 
-  // baris judul & tanggal dibiarkan tinggi normal, baris header tabel dibuat sedikit lebih tinggi
-  ws['!rows'] = [{hpt:20},{hpt:16},{hpt:14},{hpt:8},{hpt:20}];
+  // ---- Baris 1: Nama RT ----
+  sheet.mergeCells(1,1,1,jumlahKolom);
+  const selRT = sheet.getCell(1,1);
+  selRT.value = namaRT;
+  selRT.font = { bold:true, size:14, color:{argb:PUTIH} };
+  selRT.alignment = { horizontal:'center', vertical:'middle' };
+  selRT.fill = { type:'pattern', pattern:'solid', fgColor:{argb:HIJAU} };
+  sheet.getRow(1).height = 24;
 
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, 'Data');
-  XLSX.writeFile(wb, namaFile + '.xlsx');
+  // ---- Baris 2: Judul laporan ----
+  sheet.mergeCells(2,1,2,jumlahKolom);
+  const selJudul = sheet.getCell(2,1);
+  selJudul.value = judulLaporan;
+  selJudul.font = { bold:true, size:12, color:{argb:HIJAU_TUA} };
+  selJudul.alignment = { horizontal:'center', vertical:'middle' };
+  selJudul.fill = { type:'pattern', pattern:'solid', fgColor:{argb:HIJAU_PUCAT} };
+  sheet.getRow(2).height = 20;
+
+  // ---- Baris 3: Tanggal cetak ----
+  sheet.mergeCells(3,1,3,jumlahKolom);
+  const selTgl = sheet.getCell(3,1);
+  selTgl.value = 'Dicetak pada ' + tglCetak;
+  selTgl.font = { italic:true, size:9, color:{argb:'FF666666'} };
+  selTgl.alignment = { horizontal:'center' };
+  sheet.getRow(3).height = 16;
+
+  // ---- Baris 4: spacer kosong ----
+  sheet.addRow([]);
+  sheet.getRow(4).height = 6;
+
+  // ---- Baris 5: header tabel ----
+  const headerRow = sheet.addRow(arr[0]);
+  headerRow.height = 22;
+  headerRow.eachCell(cell=>{
+    cell.font = { bold:true, size:10, color:{argb:PUTIH} };
+    cell.fill = { type:'pattern', pattern:'solid', fgColor:{argb:HIJAU} };
+    cell.alignment = { horizontal:'center', vertical:'middle', wrapText:true };
+    cell.border = {
+      top:{style:'thin',color:{argb:PUTIH}}, left:{style:'thin',color:{argb:PUTIH}},
+      bottom:{style:'thin',color:{argb:PUTIH}}, right:{style:'thin',color:{argb:PUTIH}}
+    };
+  });
+
+  // ---- Baris data ----
+  arr.slice(1).forEach((baris, idx) => {
+    const isTotal = String(baris[0]||'').toUpperCase().includes('TOTAL');
+    const nilaiBaris = baris.map(sel => {
+      const angka = rupiahKeAngka(sel);
+      return angka !== null ? angka : sel;
+    });
+    const row = sheet.addRow(nilaiBaris);
+    row.eachCell((cell, colNumber) => {
+      const teksAsli = baris[colNumber-1];
+      const angka = rupiahKeAngka(teksAsli);
+      cell.border = {
+        top:{style:'thin',color:{argb:ABU_BORDER}}, left:{style:'thin',color:{argb:ABU_BORDER}},
+        bottom:{style:'thin',color:{argb:ABU_BORDER}}, right:{style:'thin',color:{argb:ABU_BORDER}}
+      };
+      if(angka !== null){
+        cell.numFmt = '"Rp"#,##0';
+        cell.alignment = { horizontal:'right' };
+      } else {
+        cell.alignment = { horizontal: colNumber===1 ? 'center' : 'left', vertical:'middle' };
+      }
+      if(isTotal){
+        cell.font = { bold:true, color:{argb:HIJAU_TUA} };
+        cell.fill = { type:'pattern', pattern:'solid', fgColor:{argb:TOTAL_BG} };
+      } else if(idx % 2 === 1){
+        cell.fill = { type:'pattern', pattern:'solid', fgColor:{argb:ZEBRA} };
+      }
+    });
+  });
+
+  // ---- Lebar kolom otomatis menyesuaikan isi terpanjang ----
+  arr[0].forEach((_, colIdx) => {
+    const panjangMaks = Math.max(...arr.map(baris => String(baris[colIdx]||'').length));
+    sheet.getColumn(colIdx+1).width = Math.min(Math.max(panjangMaks + 4, 12), 40);
+  });
+
+  const buffer = await workbook.xlsx.writeBuffer();
+  const blob = new Blob([buffer], { type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = namaFile + '.xlsx';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
   toast('File Excel berhasil diunduh');
 }
 
